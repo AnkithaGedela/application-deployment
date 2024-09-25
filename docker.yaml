@@ -1,0 +1,32 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:5.7  # Specify the MySQL version
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}      # Create the database
+      MYSQL_USER: ${MYSQL_USER}         # User for the database
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}  # User password
+    networks:
+      - test  # Define the network to connect to
+
+  web:
+    build: 
+      context: .  # Path to the Dockerfile
+    ports:
+      - 5000:5000  # Expose Flask app
+    environment:
+      MYSQL_HOST: mysql  # Host is the name of the mysql service
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DB: ${MYSQL_DB}
+    depends_on:
+      - mysql  # Ensure MySQL is started before the web app
+    networks:
+      - test  # Connect to the same network
+
+networks:
+  test:
+    external: true  # Use an existing external network
